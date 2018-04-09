@@ -4,16 +4,15 @@
      <h1>{{ msg }}</h1>
     </section>
     <section id="option">
-     <el-button id="hold" type="primary" v-on:click="begin()">开始</el-button>
+     <el-button id="hold" type="primary" v-on:click="begin()">{{ status.btn }}</el-button>
      <el-button id="end" type="primary" v-on:click="reset()">重置</el-button>
     </section>
     <section>
       <el-form :inline="true" :model="time" :rules="rule" ref="time" class="demo-form-inline">
         <el-form-item label="倒数几分钟啊" prop="minute">
-         <el-input v-model="time.minute" placeholder="几分钟呢"></el-input>
+         <el-input v-model="time.minute" placeholder="几分钟呢" @keyup.native="confirm('time')" :disabled="status.countting == 1"></el-input>
         </el-form-item>
         <el-form-item>
-        <el-button type="primary" v-on:click="confirm('time')">确定</el-button>
         </el-form-item>
       </el-form>
     </section>
@@ -22,7 +21,7 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'CountDown',
   data () {
     var checkMinute = (rule, value, callback) => {
       if (!value) {
@@ -37,6 +36,10 @@ export default {
       }, 1000)
     }
     return {
+      status: {
+        btn: '开始',
+        countting: 0
+      },
       intervalId: null,
       msg: '00:00:00',
       time: {
@@ -99,23 +102,36 @@ export default {
       this.printTime()
       if (this.secend <= 0) {
         window.clearInterval(this.intervalId)
+        this.status.btn = '开始'
+        this.status.countting = 0
+        this.setSecend()
       }
       this.secend -= 1
     },
     begin () {
-      this.intervalId = setInterval(() => {
-        this.countDown()
-      }, 1000)
+      if (this.status.countting === 0) {
+        this.status.btn = '暂停'
+        this.status.countting = 1
+        this.intervalId = setInterval(() => {
+          this.countDown()
+        }, 1000)
+      } else {
+        this.status.btn = '开始'
+        this.status.countting = 0
+        clearInterval(this.intervalId)
+      }
     },
     reset () {
       clearInterval(this.intervalId)
       this.setSecend()
+      this.printTime()
+      this.status.btn = '开始'
+      this.status.countting = 0
     }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #countdown {
   margin-top: 250px;
