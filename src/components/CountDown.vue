@@ -104,7 +104,7 @@ export default {
         window.clearInterval(this.intervalId)
         this.status.btn = '开始'
         this.status.countting = 0
-        this.setSecend()
+        this.setSecend() // 倒数结束，一开始的秒数
       }
       this.secend -= 1
     },
