@@ -4,13 +4,13 @@
      <h1>{{ msg }}</h1>
     </section>
     <section id="option">
-     <el-button id="hold" type="primary" v-on:click="begin()">{{ status.btn }}</el-button>
-     <el-button id="end" type="primary" v-on:click="reset()">重置</el-button>
+     <el-button id="hold" type="primary" v-on:click="begin()" :disabled="status.status == 3">{{ status.btn }}</el-button>
+     <el-button id="end" type="primary" v-on:click="reset()" :disabled="status.status == 1">重置</el-button>
     </section>
     <section>
       <el-form :inline="true" :model="time" :rules="rule" ref="time" class="demo-form-inline">
         <el-form-item label="倒数几分钟啊" prop="minute">
-         <el-input v-model="time.minute" placeholder="几分钟呢" @keyup.native="confirm('time')" :disabled="status.countting == 1"></el-input>
+         <el-input v-model="time.minute" placeholder="几分钟呢" @keyup.native="confirm('time')" :disabled="status.status != 0"></el-input>
         </el-form-item>
         <el-form-item>
         </el-form-item>
@@ -38,7 +38,9 @@ export default {
     return {
       status: {
         btn: '开始',
-        countting: 0
+        btnTxt: ['开始', '暂停', '继续'],
+        status: 0,
+        statusArr: [0, 1, 2, 3] // 0: 初始，1：计时中，2：暂停，3:结束
       },
       intervalId: null,
       msg: '00:00:00',
@@ -102,22 +104,22 @@ export default {
       this.printTime()
       if (this.secend <= 0) {
         window.clearInterval(this.intervalId)
-        this.status.btn = '开始'
-        this.status.countting = 0
+        this.status.btn = this.status.btnTxt[1]
+        this.status.status = this.status.statusArr[3]
         this.setSecend() // 倒数结束，一开始的秒数
       }
       this.secend -= 1
     },
     begin () {
-      if (this.status.countting === 0) {
-        this.status.btn = '暂停'
-        this.status.countting = 1
+      if (this.status.status === 0 || this.status.status === 2) {
+        this.status.btn = this.status.btnTxt[1]
+        this.status.status = this.status.statusArr[1]
         this.intervalId = setInterval(() => {
           this.countDown()
         }, 1000)
-      } else {
-        this.status.btn = '开始'
-        this.status.countting = 0
+      } else if (this.status.status === 1) {
+        this.status.btn = this.status.btnTxt[2]
+        this.status.status = this.status.statusArr[2]
         clearInterval(this.intervalId)
       }
     },
@@ -126,10 +128,15 @@ export default {
       this.setSecend()
       this.printTime()
       this.status.btn = '开始'
-      this.status.countting = 0
+      this.status.status = this.status.statusArr[0]
     }
+  },
+  mounted () {
+    this.status.btn = this.status.btnTxt[0]
+    this.status.status = this.status.statusArr[0]
   }
 }
+
 </script>
 
 <style scoped>
