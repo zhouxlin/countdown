@@ -112,6 +112,10 @@ export default {
     },
     begin () {
       if (this.status.status === 0 || this.status.status === 2) {
+        if (this.secend === 0) {
+          this.$message('设置个时间呗')
+          return
+        }
         this.status.btn = this.status.btnTxt[1]
         this.status.status = this.status.statusArr[1]
         this.intervalId = setInterval(() => {
