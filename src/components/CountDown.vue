@@ -1,7 +1,7 @@
 <template>
   <div>
     <section id="countdown">
-      <clock :clock="msg"></clock> <!-- 引用显示时钟组件 -->
+      <clock ref="clock"></clock> <!-- 引用显示时钟组件 -->
     </section>
     <section id="option">
      <el-button id="hold" type="primary" v-on:click="begin()" :disabled="status.status == 3">{{ status.btn }}</el-button>
@@ -25,7 +25,6 @@ import Clock from './Clock'
 export default {
   components: {Clock}, // 引入时钟组件
   name: 'CountDown',
-  props: ['clock'],
   data () {
     var checkMinute = (rule, value, callback) => {
       if (!value) {
@@ -47,7 +46,6 @@ export default {
         statusArr: [0, 1, 2, 3] // 0: 初始，1：计时中，2：暂停，3:结束
       },
       intervalId: null,
-      msg: '00:00:00',
       time: {
         minute: ''
       },
@@ -74,34 +72,9 @@ export default {
     setSecend () {
       this.secend = (this.time.minute * 60)
     },
-    getTime (secend) {
-      var time = {
-        hours: '',
-        minute: '',
-        secend: ''
-      }
-
-      var hours = String(secend / 3600)
-      time.hours = (hours.split('.')[0])
-      secend = secend % 3600
-      var minute = String(secend / 60)
-      time.minute = (minute.split('.')[0])
-      time.secend = String(secend % 60)
-      if (time.secend.length === 1) {
-        time.secend = '0' + time.secend
-      }
-      if (time.hours.length === 1) {
-        time.hours = '0' + time.hours
-      }
-      if (time.minute.length === 1) {
-        time.minute = '0' + time.minute
-      }
-      return time
-    },
     // 输出时间
     printTime () {
-      var time = this.getTime(this.secend)
-      this.msg = time.hours + ':' + time.minute + ':' + time.secend
+      this.$refs.clock.show(this.secend)
     },
     // 倒计时
     countDown () {
