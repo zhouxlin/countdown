@@ -1,14 +1,14 @@
 <template>
   <div>
     <section id="countdown">
-     <h1>{{ msg }}</h1>
+      <clock :clock="msg"></clock> <!-- 引用显示时钟组件 -->
     </section>
     <section id="option">
      <el-button id="hold" type="primary" v-on:click="begin()" :disabled="status.status == 3">{{ status.btn }}</el-button>
      <el-button id="end" type="primary" v-on:click="reset()" :disabled="status.status == 1">重置</el-button>
     </section>
     <section>
-      <el-form :inline="true" :model="time" :rules="rule" ref="time" class="demo-form-inline">
+      <el-form :inline="true" :model="time" :rules="rule" ref="time">
         <el-form-item label="倒数几分钟啊" prop="minute">
          <el-input v-model="time.minute" placeholder="几分钟呢" @keyup.native="confirm('time')" :disabled="status.status != 0"></el-input>
         </el-form-item>
@@ -20,8 +20,12 @@
 </template>
 
 <script>
+import Clock from './Clock'
+
 export default {
+  components: {Clock}, // 引入时钟组件
   name: 'CountDown',
+  props: ['clock'],
   data () {
     var checkMinute = (rule, value, callback) => {
       if (!value) {
@@ -149,8 +153,5 @@ export default {
 }
 #option {
   margin-bottom: 50px;
-}
-h1 {
-  font-size: 160px;
 }
 </style>
